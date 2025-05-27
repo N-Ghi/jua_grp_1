@@ -19,14 +19,14 @@ To ensure consistency, transparency, and developer-friendly usage, the JuaJobs A
 ## Standardized Error Response Format
 All API error responses will follow a consistent structure for easy parsing and user feedback:
 
-{
+'''{
   "status": 400,
   "error": "Bad Request",
   "code": "VALIDATION_FAILED",
   "message": "The 'email' field is required and must be a valid email address.",
   "timestamp": "2025-05-26T15:45:00Z",
   "path": "/api/v1/users/register"
-}
+}'''
 
 ## Error Categorization
 | Category |	Prefix Code |	Example Codes |	Description |
