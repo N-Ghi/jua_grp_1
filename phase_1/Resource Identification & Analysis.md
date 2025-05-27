@@ -2,7 +2,7 @@
 This section outlines both the foundational and extended resources required to support the functionality of the JuaJobs platform, analyzing their business relevance, ownership, and lifecycle.
 ##Initial Core Resources
 
-###Users
+### Users
 
 Description: Represents both clients and workers; includes role, credentials, and profile data.
 
@@ -31,7 +31,7 @@ Ownership: Client.
 Lifecycle: From creation to job fulfillment, withdrawal, or expiry.
 
 
-###Worker Profiles
+### Worker Profiles
 
 
 Description: Displays a worker’s expertise, location, ratings, and availability.
@@ -46,7 +46,7 @@ Ownership: Worker.
 Lifecycle: Continuously updated as skills or availability change.
 
 
-###Applications
+### Applications
 
 
 Description: A worker’s submission indicating interest in a job posting.
@@ -61,7 +61,7 @@ Ownership: Worker (created); client/system (updated).
 Lifecycle: Exists from submission to job assignment, withdrawal, or rejection.
 
 
-###Reviews
+### Reviews
 
 
 Description: Feedback from clients and workers after job completion.
@@ -76,9 +76,9 @@ Ownership: Reviewer (either party).
 Lifecycle: Created once per job; immutable thereafter.
 
 
-##Extended Resources
+## Extended Resources
 
-###Payments
+### Payments
 
 
 Description: Digital records of payments between users.
@@ -93,7 +93,7 @@ Ownership: Client (payer); recorded by system.
 Lifecycle: Created upon payment; immutable for audit purposes.
 
 
-###Notifications
+### Notifications
 
 
 Description: System-generated alerts for jobs, applications, reviews, etc.
@@ -108,7 +108,7 @@ Ownership: System-generated per user.
 Lifecycle: Created on event trigger; user can mark as read/delete.
 
 
-###Categories
+### Categories
 
 
 Description: Classifies job postings by industry (e.g., plumbing, tailoring).
