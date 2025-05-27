@@ -129,10 +129,10 @@ Lifecycle: Mostly static; can be expanded as the platform grows.
 |----------|----------|----------|----------|
 | Users |	Individual User |	User |	Persistent; deletable/deactivatable |
 | Job Postings |	Client |	Client |	Valid until withdrawn, expired, or fulfilled |
-Worker Profiles	Worker	Worker	Continuously updated
-Applications	Worker	Worker	Exists from application to resolution
-Reviews	Client/Worker	Reviewer	Immutable post-creation
-Payments	System/Client	System/Client	Immutable; auditable
-Notifications	System → User	System	Ephemeral; user-managed read/delete state
-Categories	Platform Admins	Admin	Semi-static; curated centrally
+| Worker Profiles | 	Worker |	Worker |	Continuously updated |
+| Applications |	Worker |	Worker |	Exists from application to resolution |
+| Reviews	 | Client/Worker |	Reviewer |	Immutable post-creation
+| Payments |	System/Client |	System/Client |	Immutable; auditable |
+| Notifications | System → User	| System	| Ephemeral; user-managed read/delete state |
+| Categories |	Platform Admins	| Admin	| Semi-static; curated centrally |
 
