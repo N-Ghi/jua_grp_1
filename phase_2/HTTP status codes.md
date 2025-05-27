@@ -1,8 +1,9 @@
- HTTP Status Codes & Error Handling
+# HTTP Status Codes & Error Handling
 To ensure consistency, transparency, and developer-friendly usage, the JuaJobs API adheres to industry best practices for HTTP status codes and structured error messaging. This supports better debugging, smoother integrations, and clear communication between API consumers and the backend system.
 
-HTTP Status Codes Definition
-Code	Meaning	Usage in JuaJobs API
+## HTTP Status Codes Definition
+| Code |	Meaning	| Usage in JuaJobs API |
+|--------|---------|---------------------|
 200 OK	Successful request	Resource retrieval (GET), job listing, profile fetch
 201 Created	Resource successfully created	User registration, job posting, application submission
 204 No Content	Successful with no body	DELETE operations (e.g., delete review or job post)
