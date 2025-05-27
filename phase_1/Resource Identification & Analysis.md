@@ -16,7 +16,7 @@ Ownership: Individual user.
 Lifecycle: Created at registration; updated periodically; deletable by user.
 
 
-###Job Postings
+### Job Postings
 
 
 Description: Jobs posted by clients with specific requirements and deadlines.
