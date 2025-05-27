@@ -1,0 +1,1795 @@
+openapi: 3.0.3
+info:
+  title: JuaJobs API
+  description: |
+    A comprehensive API for JuaJobs platform that connects clients with freelancers.
+    Supports user management, job postings, applications, reviews, and authentication.
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@juajobs.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.juajobs.com/v1
+    description: Production server
+  - url: https://staging-api.juajobs.com/v1
+    description: Staging server
+
+security:
+  - BearerAuth: []
+
+paths:
+  # USERS ENDPOINTS
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Fetch all users
+      description: Retrieve a list of all users. Typically used for admin purposes or listing freelancers.
+      parameters:
+        - name: role
+          in: query
+          description: Filter users by role
+          schema:
+            type: string
+            enum: [client, freelancer, admin]
+        - name: sort_by
+          in: query
+          description: Field to sort by
+          schema:
+            type: string
+            enum: [created_at, updated_at, name, rating]
+            default: created_at
+        - name: order
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+        - name: limit
+          in: query
+          description: Number of users to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of users to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: List of users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Users
+      summary: Register a new user
+      description: Create a new user account on the platform
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: View a user's profile
+      description: Retrieve detailed information about a specific user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Users
+      summary: Update user's entire profile
+      description: Replace all fields of a user's profile (overwrites all fields)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: User profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      tags:
+        - Users
+      summary: Update part of user's profile
+      description: Update specific fields of a user's profile (like bio or profile image)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPatch'
+      responses:
+        '200':
+          description: User profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Users
+      summary: Delete user account
+      description: Permanently delete a user account and all associated data
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: User account deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # JOBS ENDPOINTS
+  /jobs:
+    get:
+      tags:
+        - Jobs
+      summary: List all jobs
+      description: Retrieve a list of all job postings on the platform
+      parameters:
+        - name: category
+          in: query
+          description: Filter jobs by category
+          schema:
+            type: string
+        - name: budget_min
+          in: query
+          description: Minimum budget filter
+          schema:
+            type: number
+            format: double
+        - name: budget_max
+          in: query
+          description: Maximum budget filter
+          schema:
+            type: number
+            format: double
+        - name: status
+          in: query
+          description: Filter jobs by status
+          schema:
+            type: string
+            enum: [open, in_progress, completed, cancelled]
+        - name: sort_by
+          in: query
+          description: Field to sort by
+          schema:
+            type: string
+            enum: [created_at, updated_at, budget, deadline]
+            default: created_at
+        - name: order
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+        - name: limit
+          in: query
+          description: Number of jobs to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of jobs to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: List of jobs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Job'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Jobs
+      summary: Post a new job
+      description: Create a new job posting on the platform
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobCreate'
+      responses:
+        '201':
+          description: Job created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /jobs/{id}:
+    get:
+      tags:
+        - Jobs
+      summary: View a specific job listing
+      description: Retrieve detailed information about a specific job
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Job ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Job details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Jobs
+      summary: Replace all fields of a job
+      description: Update all fields of a job posting (complete replacement)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Job ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobUpdate'
+      responses:
+        '200':
+          description: Job updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      tags:
+        - Jobs
+      summary: Update specific job fields
+      description: Update one or more fields of a job (e.g., deadline, budget)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Job ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobPatch'
+      responses:
+        '200':
+          description: Job updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Jobs
+      summary: Remove a job listing
+      description: Delete a job posting from the platform
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Job ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Job deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # APPLICATIONS ENDPOINTS
+  /jobs/{job_id}/applications:
+    post:
+      tags:
+        - Applications
+      summary: Apply to a job
+      description: Submit an application for a specific job posting
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          description: Job ID to apply for
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationCreate'
+      responses:
+        '201':
+          description: Application submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Application already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    get:
+      tags:
+        - Applications
+      summary: View all applications to a job
+      description: Retrieve all applications submitted for a specific job
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          description: Job ID
+          schema:
+            type: integer
+            format: int64
+        - name: status
+          in: query
+          description: Filter applications by status
+          schema:
+            type: string
+            enum: [pending, accepted, rejected, withdrawn]
+        - name: sort_by
+          in: query
+          description: Field to sort by
+          schema:
+            type: string
+            enum: [created_at, updated_at]
+            default: created_at
+        - name: order
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Applications retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  applications:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Application'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /applications/{id}:
+    get:
+      tags:
+        - Applications
+      summary: View a specific application
+      description: Retrieve detailed information about a specific application
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Application ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Application details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      tags:
+        - Applications
+      summary: Update application status
+      description: Update the status of an application (e.g., from pending to accepted)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Application ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationPatch'
+      responses:
+        '200':
+          description: Application updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Applications
+      summary: Withdraw application
+      description: Remove an application from a job posting
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Application ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Application withdrawn successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # REVIEWS ENDPOINTS
+  /users/{user_id}/reviews:
+    post:
+      tags:
+        - Reviews
+      summary: Post a review for a user
+      description: Submit a review and rating for a specific user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: ID of the user being reviewed
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewCreate'
+      responses:
+        '201':
+          description: Review posted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Review already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    get:
+      tags:
+        - Reviews
+      summary: Get reviews received by a user
+      description: Retrieve all reviews that a user has received
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+            format: int64
+        - name: rating
+          in: query
+          description: Filter reviews by rating
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+        - name: sort_by
+          in: query
+          description: Field to sort by
+          schema:
+            type: string
+            enum: [created_at, updated_at, rating]
+            default: created_at
+        - name: order
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+        - name: limit
+          in: query
+          description: Number of reviews to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of reviews to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Reviews retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reviews:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Review'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                  average_rating:
+                    type: number
+                    format: double
+                    description: Average rating for the user
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /reviews/{id}:
+    patch:
+      tags:
+        - Reviews
+      summary: Edit a review
+      description: Update the content or rating of an existing review
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Review ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewPatch'
+      responses:
+        '200':
+          description: Review updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Reviews
+      summary: Delete a review
+      description: Remove a review from the platform
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Review ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Review deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # AUTHENTICATION ENDPOINTS
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Create account
+      description: Register a new user account and receive authentication tokens
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Log in and receive tokens
+      description: Authenticate user credentials and receive access and refresh tokens
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Invalidate token/session
+      description: Log out the current user and invalidate their tokens
+      responses:
+        '204':
+          description: Logout successful
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Get new access token
+      description: Use refresh token to obtain a new access token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from login endpoint
+
+  schemas:
+    # USER SCHEMAS
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique user identifier
+        email:
+          type: string
+          format: email
+          description: User's email address
+        username:
+          type: string
+          description: Unique username
+        first_name:
+          type: string
+          description: User's first name
+        last_name:
+          type: string
+          description: User's last name
+        role:
+          type: string
+          enum: [client, freelancer, admin]
+          description: User's role on the platform
+        bio:
+          type: string
+          description: User's biography
+        profile_image_url:
+          type: string
+          format: uri
+          description: URL to user's profile image
+        skills:
+          type: array
+          items:
+            type: string
+          description: List of user's skills
+        hourly_rate:
+          type: number
+          format: double
+          description: User's hourly rate (for freelancers)
+        location:
+          type: string
+          description: User's location
+        rating:
+          type: number
+          format: double
+          description: Average rating received
+        total_reviews:
+          type: integer
+          description: Total number of reviews received
+        created_at:
+          type: string
+          format: date-time
+          description: Account creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last profile update timestamp
+      required:
+        - id
+        - email
+        - username
+        - first_name
+        - last_name
+        - role
+        - created_at
+        - updated_at
+
+    UserCreate:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        password:
+          type: string
+          minLength: 8
+          description: User's password (must be at least 8 characters)
+        role:
+          type: string
+          enum: [client, freelancer]
+        bio:
+          type: string
+          maxLength: 1000
+        skills:
+          type: array
+          items:
+            type: string
+        hourly_rate:
+          type: number
+          format: double
+          minimum: 0
+        location:
+          type: string
+      required:
+        - email
+        - username
+        - first_name
+        - last_name
+        - password
+        - role
+
+    UserUpdate:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        bio:
+          type: string
+          maxLength: 1000
+        skills:
+          type: array
+          items:
+            type: string
+        hourly_rate:
+          type: number
+          format: double
+          minimum: 0
+        location:
+          type: string
+      required:
+        - email
+        - username
+        - first_name
+        - last_name
+
+    UserPatch:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        bio:
+          type: string
+          maxLength: 1000
+        profile_image_url:
+          type: string
+          format: uri
+        skills:
+          type: array
+          items:
+            type: string
+        hourly_rate:
+          type: number
+          format: double
+          minimum: 0
+        location:
+          type: string
+
+    # JOB SCHEMAS
+    Job:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique job identifier
+        title:
+          type: string
+          description: Job title
+        description:
+          type: string
+          description: Detailed job description
+        category:
+          type: string
+          description: Job category
+        budget:
+          type: number
+          format: double
+          description: Job budget
+        budget_type:
+          type: string
+          enum: [fixed, hourly]
+        deadline:
+          type: string
+          format: date-time
+        required_skills:
+          type: array
+          items:
+            type: string
+      required:
+        - title
+        - description
+        - budget
+        - budget_type
+
+    JobUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 5
+          maxLength: 100
+        description:
+          type: string
+          minLength: 20
+          maxLength: 2000
+        category:
+          type: string
+        budget:
+          type: number
+          format: double
+          minimum: 0
+        budget_type:
+          type: string
+          enum: [fixed, hourly]
+        deadline:
+          type: string
+          format: date-time
+        required_skills:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [open, in_progress, completed, cancelled]
+      required:
+        - title
+        - description
+        - budget
+        - budget_type
+
+    JobPatch:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 5
+          maxLength: 100
+        description:
+          type: string
+          minLength: 20
+          maxLength: 2000
+        category:
+          type: string
+        budget:
+          type: number
+          format: double
+          minimum: 0
+        budget_type:
+          type: string
+          enum: [fixed, hourly]
+        deadline:
+          type: string
+          format: date-time
+        required_skills:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [open, in_progress, completed, cancelled]
+
+    # APPLICATION SCHEMAS
+    Application:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique application identifier
+        job_id:
+          type: integer
+          format: int64
+          description: ID of the job being applied to
+        job:
+          $ref: '#/components/schemas/Job'
+        freelancer_id:
+          type: integer
+          format: int64
+          description: ID of the freelancer applying
+        freelancer:
+          $ref: '#/components/schemas/User'
+        cover_letter:
+          type: string
+          description: Application cover letter
+        proposed_budget:
+          type: number
+          format: double
+          description: Freelancer's proposed budget
+        estimated_duration:
+          type: string
+          description: Estimated project duration
+        status:
+          type: string
+          enum: [pending, accepted, rejected, withdrawn]
+          description: Application status
+        created_at:
+          type: string
+          format: date-time
+          description: Application submission timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last application update timestamp
+      required:
+        - id
+        - job_id
+        - freelancer_id
+        - cover_letter
+        - status
+        - created_at
+        - updated_at
+
+    ApplicationCreate:
+      type: object
+      properties:
+        cover_letter:
+          type: string
+          minLength: 50
+          maxLength: 1000
+          description: Cover letter explaining why you're the right fit
+        proposed_budget:
+          type: number
+          format: double
+          minimum: 0
+          description: Your proposed budget for the project
+        estimated_duration:
+          type: string
+          description: How long you estimate the project will take
+      required:
+        - cover_letter
+
+    ApplicationPatch:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, accepted, rejected, withdrawn]
+          description: New application status
+        cover_letter:
+          type: string
+          minLength: 50
+          maxLength: 1000
+        proposed_budget:
+          type: number
+          format: double
+          minimum: 0
+        estimated_duration:
+          type: string
+
+    # REVIEW SCHEMAS
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique review identifier
+        reviewer_id:
+          type: integer
+          format: int64
+          description: ID of the user writing the review
+        reviewer:
+          $ref: '#/components/schemas/User'
+        reviewee_id:
+          type: integer
+          format: int64
+          description: ID of the user being reviewed
+        reviewee:
+          $ref: '#/components/schemas/User'
+        job_id:
+          type: integer
+          format: int64
+          description: ID of the related job (if applicable)
+        job:
+          $ref: '#/components/schemas/Job'
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Rating from 1 to 5 stars
+        title:
+          type: string
+          description: Review title
+        comment:
+          type: string
+          description: Detailed review comment
+        created_at:
+          type: string
+          format: date-time
+          description: Review creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last review update timestamp
+      required:
+        - id
+        - reviewer_id
+        - reviewee_id
+        - rating
+        - title
+        - comment
+        - created_at
+        - updated_at
+
+    ReviewCreate:
+      type: object
+      properties:
+        job_id:
+          type: integer
+          format: int64
+          description: ID of the related job
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Rating from 1 to 5 stars
+        title:
+          type: string
+          minLength: 5
+          maxLength: 100
+          description: Review title
+        comment:
+          type: string
+          minLength: 10
+          maxLength: 1000
+          description: Detailed review comment
+      required:
+        - rating
+        - title
+        - comment
+
+    ReviewPatch:
+      type: object
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        title:
+          type: string
+          minLength: 5
+          maxLength: 100
+        comment:
+          type: string
+          minLength: 10
+          maxLength: 1000
+
+    # AUTHENTICATION SCHEMAS
+    RegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+          description: Unique username
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+          description: User's first name
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+          description: User's last name
+        password:
+          type: string
+          minLength: 8
+          description: User's password (minimum 8 characters)
+        role:
+          type: string
+          enum: [client, freelancer]
+          description: User's role on the platform
+      required:
+        - email
+        - username
+        - first_name
+        - last_name
+        - password
+        - role
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+        password:
+          type: string
+          description: User's password
+      required:
+        - email
+        - password
+
+    RefreshRequest:
+      type: object
+      properties:
+        refresh_token:
+          type: string
+          description: Valid refresh token
+      required:
+        - refresh_token
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        access_token:
+          type: string
+          description: JWT access token
+        refresh_token:
+          type: string
+          description: JWT refresh token
+        token_type:
+          type: string
+          default: "Bearer"
+        expires_in:
+          type: integer
+          description: Access token expiration time in seconds
+      required:
+        - user
+        - access_token
+        - refresh_token
+        - token_type
+        - expires_in
+
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: New JWT access token
+        token_type:
+          type: string
+          default: "Bearer"
+        expires_in:
+          type: integer
+          description: Access token expiration time in seconds
+      required:
+        - access_token
+        - token_type
+        - expires_in
+
+    # UTILITY SCHEMAS
+    Pagination:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of items
+        limit:
+          type: integer
+          description: Number of items per page
+        offset:
+          type: integer
+          description: Number of items skipped
+        has_next:
+          type: boolean
+          description: Whether there are more items available
+        has_previous:
+          type: boolean
+          description: Whether there are previous items available
+      required:
+        - total
+        - limit
+        - offset
+        - has_next
+        - has_previous
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error type or code
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error details
+        timestamp:
+          type: string
+          format: date-time
+          description: Error occurrence timestamp
+      required:
+        - error
+        - message
+        - timestamp
+
+    ValidationError:
+      type: object
+      properties:
+        error:
+          type: string
+          default: "validation_error"
+        message:
+          type: string
+          description: Human-readable error message
+        field_errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: Field-specific validation errors
+        timestamp:
+          type: string
+          format: date-time
+          description: Error occurrence timestamp
+      required:
+        - error
+        - message
+        - field_errors
+        - timestamp
+
+  responses:
+    BadRequest:
+      description: Bad request due to invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+          examples:
+            validation_error:
+              summary: Validation error example
+              value:
+                error: "validation_error"
+                message: "Invalid input data"
+                field_errors:
+                  email: ["Email is required", "Invalid email format"]
+                  password: ["Password must be at least 8 characters"]
+                timestamp: "2024-01-15T10:30:00Z"
+
+    Unauthorized:
+      description: Authentication required or invalid credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            missing_token:
+              summary: Missing authentication token
+              value:
+                error: "unauthorized"
+                message: "Authentication token is required"
+                timestamp: "2024-01-15T10:30:00Z"
+            invalid_token:
+              summary: Invalid authentication token
+              value:
+                error: "unauthorized"
+                message: "Invalid or expired authentication token"
+                timestamp: "2024-01-15T10:30:00Z"
+
+    Forbidden:
+      description: Access denied - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            access_denied:
+              summary: Access denied
+              value:
+                error: "forbidden"
+                message: "You don't have permission to access this resource"
+                timestamp: "2024-01-15T10:30:00Z"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            user_not_found:
+              summary: User not found
+              value:
+                error: "not_found"
+                message: "User with ID 123 not found"
+                timestamp: "2024-01-15T10:30:00Z"
+            job_not_found:
+              summary: Job not found
+              value:
+                error: "not_found"
+                message: "Job with ID 456 not found"
+                timestamp: "2024-01-15T10:30:00Z"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            server_error:
+              summary: Internal server error
+              value:
+                error: "internal_server_error"
+                message: "An unexpected error occurred. Please try again later."
+                timestamp: "2024-01-15T10:30:00Z"
+
+  examples:
+    # USER EXAMPLES
+    UserExample:
+      summary: Freelancer user example
+      value:
+        id: 123
+        email: "john.doe@example.com"
+        username: "johndoe"
+        first_name: "John"
+        last_name: "Doe"
+        role: "freelancer"
+        bio: "Experienced web developer with 5+ years in React and Node.js"
+        profile_image_url: "https://example.com/profiles/johndoe.jpg"
+        skills: ["JavaScript", "React", "Node.js", "PostgreSQL"]
+        hourly_rate: 75.00
+        location: "San Francisco, CA"
+        rating: 4.8
+        total_reviews: 24
+        created_at: "2023-06-15T08:30:00Z"
+        updated_at: "2024-01-10T14:22:00Z"
+
+    ClientExample:
+      summary: Client user example
+      value:
+        id: 456
+        email: "startup@example.com"
+        username: "techstartup"
+        first_name: "Tech"
+        last_name: "Startup"
+        role: "client"
+        bio: "Early-stage startup looking for talented developers"
+        profile_image_url: "https://example.com/profiles/techstartup.jpg"
+        skills: []
+        hourly_rate: null
+        location: "New York, NY"
+        rating: 4.9
+        total_reviews: 8
+        created_at: "2023-08-20T12:15:00Z"
+        updated_at: "2024-01-05T09:45:00Z"
+
+    # JOB EXAMPLES
+    JobExample:
+      summary: Web development job example
+      value:
+        id: 789
+        title: "Build a React E-commerce Website"
+        description: "Looking for an experienced React developer to build a modern e-commerce website with payment integration, user authentication, and admin dashboard."
+        category: "Web Development"
+        budget: 3500.00
+        budget_type: "fixed"
+        deadline: "2024-03-15T23:59:59Z"
+        status: "open"
+        required_skills: ["React", "Node.js", "MongoDB", "Stripe API"]
+        client_id: 456
+        assigned_freelancer_id: null
+        application_count: 12
+        created_at: "2024-01-10T16:30:00Z"
+        updated_at: "2024-01-10T16:30:00Z"
+
+    # APPLICATION EXAMPLES
+    ApplicationExample:
+      summary: Job application example
+      value:
+        id: 321
+        job_id: 789
+        freelancer_id: 123
+        cover_letter: "I'm excited to work on your e-commerce project. With 5+ years of React experience and previous e-commerce builds, I can deliver a high-quality solution within your timeline."
+        proposed_budget: 3200.00
+        estimated_duration: "6 weeks"
+        status: "pending"
+        created_at: "2024-01-11T09:15:00Z"
+        updated_at: "2024-01-11T09:15:00Z"
+
+    # REVIEW EXAMPLES
+    ReviewExample:
+      summary: Positive review example
+      value:
+        id: 654
+        reviewer_id: 456
+        reviewee_id: 123
+        job_id: 789
+        rating: 5
+        title: "Excellent work and communication"
+        comment: "John delivered exceptional work on our e-commerce project. His code quality is outstanding and he communicated regularly throughout the project."
+        created_at: "2024-02-20T11:30:00Z"
+        updated_at: "2024-02-20T11:30:00Z"
+
+tags:
+  - name: Users
+    description: User management operations
+  - name: Jobs
+    description: Job posting and management operations
+  - name: Applications
+    description: Job application operations
+  - name: Reviews
+    description: User review and rating operations
+  - name: Authentication
+    description: Authentication and authorization operations
+

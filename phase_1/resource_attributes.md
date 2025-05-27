@@ -1,7 +1,11 @@
 # Core Resource Models
 
+---
+
 ## User Model
+
 ### Required Information
+
 - `id` (UUID, made by system): A unique number for each user
 - `email` (Text): User's email address
 - `password` (Text, hidden): User's secret password
@@ -13,6 +17,7 @@
 - `updatedAt` (Date/Time, made by system): When the account was last changed
 
 ### Optional Information
+
 - `profilePicture` (Text): Link to their profile photo
 - `dateOfBirth` (Date): When they were born
 - `address` (Group): Where they live
@@ -25,13 +30,16 @@
 - `lastLoginAt` (Date/Time): When they last logged in
 
 ### Rules
+
 - Email must be unique and look like a real email
 - Password must be at least 8 letters long with 1 big letter, 1 small letter, and 1 number
 - Phone number must be in the right format
 - User must be at least 18 years old
 
 ## Job Posting Model
+
 ### Required Information
+
 - `id` (UUID, made by system): A unique number for each job
 - `title` (Text): Job title
 - `description` (Text): What the job is about
@@ -44,6 +52,7 @@
 - `updatedAt` (Date/Time, made by system): When the job was last changed
 
 ### Optional Information
+
 - `category` (Text): What type of job it is
 - `skills` (List): What skills are needed
 - `location` (Group): Where the job is
@@ -53,13 +62,16 @@
 - `estimatedDuration` (Text): How long the job will take
 
 ### Rules
+
 - Title must be between 5 and 100 letters
 - Description must be between 50 and 5000 letters
 - Budget must be more than 0
 - Currency must be a real money code
 
 ## Worker Profile Model
+
 ### Required Information
+
 - `id` (UUID, made by system): A unique number
 - `userId` (UUID): Which user this profile belongs to
 - `title` (Text): Their job title
@@ -72,6 +84,7 @@
 - `updatedAt` (Date/Time, made by system): When the profile was last changed
 
 ### Optional Information
+
 - `skills` (List): What they can do
 - `experience` (List): Where they worked before
   - `title` (Text): Job title
@@ -89,13 +102,16 @@
 - `languages` (List): What languages they speak
 
 ### Rules
+
 - Title must be between 3 and 50 letters
 - Bio must be between 100 and 2000 letters
 - Hourly rate must be more than 0
 - Experience dates must make sense
 
 ## Application Model
+
 ### Required Information
+
 - `id` (UUID, made by system): A unique number
 - `jobId` (UUID): Which job they're applying for
 - `workerId` (UUID): Who is applying
@@ -105,6 +121,7 @@
 - `updatedAt` (Date/Time, made by system): When the application was last changed
 
 ### Optional Information
+
 - `bidAmount` (Group): How much they want to be paid
   - `amount` (Number): How much money
   - `currency` (Text): What type of money
@@ -113,12 +130,15 @@
 - `message` (Text): Extra message to the client
 
 ### Rules
+
 - Proposal must be between 100 and 2000 letters
 - Bid amount must be more than 0
 - A worker can only apply once to each job
 
 ## Review Model
+
 ### Required Information
+
 - `id` (UUID, made by system): A unique number
 - `jobId` (UUID): Which job this is for
 - `reviewerId` (UUID): Who wrote the review
@@ -129,16 +149,20 @@
 - `updatedAt` (Date/Time, made by system): When the review was last changed
 
 ### Optional Information
+
 - `response` (Text): Reply to the review
 - `tags` (List): Categories for the review
 
 ### Rules
+
 - Rating must be between 1 and 5
 - Comment must be between 10 and 1000 letters
 - A user can only review another user once per job
 
 ## Transaction Model
+
 ### Required Information
+
 - `id` (UUID, made by system): A unique number
 - `jobId` (UUID): Which job this is for
 - `amount` (Group): How much money
@@ -150,6 +174,7 @@
 - `updatedAt` (Date/Time, made by system): When the payment was last changed
 
 ### Optional Information
+
 - `mobileMoneyDetails` (Group): Mobile money info
   - `provider` (Text): Which mobile money service (M-PESA, MTN, Airtel)
   - `phoneNumber` (Text): Phone number for payment
@@ -162,6 +187,7 @@
 - `notes` (Text): Extra notes about payment
 
 ### Rules
+
 - Amount must be more than 0
 - Currency must be a real money code
 - Mobile money phone number must be in the right format
@@ -169,6 +195,7 @@
 - Payment status changes must make sense
 
 ### Offline Support
+
 - Can save payments when offline
 - Fixes duplicate payments
 - Makes receipts when online

@@ -1,5 +1,7 @@
 # JuaJobs API Resource Relationships Analysis
 
+---
+
 ## 1. Resource Relationship Mapping with Cardinality
 
 ### Users ↔ Job Postings
@@ -191,8 +193,6 @@ System Events
 ├── Delete all Reviews (cascade)
 └── Delete Job Completion (cascade)
 
----
-
 ## Business Rule Constraints
 
 - **User Role Validation:** Only clients can create job postings, only workers can have profiles  
@@ -201,8 +201,6 @@ System Events
 - **Payment Flow:** Linked to job completion and user verification  
 - **Notification Triggers:** System events create notifications automatically  
 - **Category Hierarchy:** Prevent circular parent-child relationships  
-
----
 
 ## Data Integrity Rules
 
@@ -228,11 +226,11 @@ System Events
 - Categories cannot reference themselves as parents  
 - Prevent orphaned records through proper `CASCADE`/`RESTRICT`/`SET NULL` rules  
 
----
-
 ## Financial Integrity
 
 - **Payment Immutability:** Payments cannot be deleted, only status updated  
 - **Audit Trail:** All payment modifications logged with timestamps  
 - **User Balance:** Calculated from payment history, not stored directly  
 - **Refund Handling:** New payment records with negative amounts 
+
+---
