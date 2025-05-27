@@ -1,6 +1,7 @@
 # Resource Identification & Analysis
 This section outlines both the foundational and extended resources required to support the functionality of the JuaJobs platform, analyzing their business relevance, ownership, and lifecycle.
-##Initial Core Resources
+
+## Initial Core Resources
 
 ### Users
 
