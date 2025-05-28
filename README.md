@@ -30,7 +30,6 @@
   Additionally, I architected secure, region-aware payment integration workflows leveraging M-Pesa, MTN Mobile Money, Flutterwave, and 
   Select banks through OAuth2, STK push, and webhook-based status tracking, all mapped to a clear transaction lifecycle model.
   ```
-  ---
   
 - **Nagasaro Ghislaine** : *Documentation Specialist*
 
@@ -41,7 +40,7 @@
   As the Documentation Specialist, I led the effort to elevate the project’s documentation quality by creating a comprehensive
   OpenAPI specification, establishing an API style guide, and producing developer-focused documentation.
   ```
----
+
 - **Nana Koramah Abeasi** : *API Architect*
 
   ```text
@@ -181,6 +180,6 @@ A clear **transaction state model** is defined with states like `pending`, `proc
 
 ## 4. Presentation Material
 
-- [Presentation Slides](https://drive.google.com/file/d/1Zj7t5PNqq_xkRbf5Xhm_I1rZQTkyWxX9/view?usp=sharing)
+- [Presentation Slides](/juajobs_presenation.pdf)
 
 ---
