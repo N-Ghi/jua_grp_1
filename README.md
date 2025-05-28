@@ -9,14 +9,16 @@ As a team member of JuaJobs API Design project, I focused on key aspects of the 
 - **Nagasaro Ghislaine** : *Documentation Specialist*
 - **Nana Koramah Abeasi** : *API Architect*
 
+  As part of the JuaJobs team, I contributed to the API architecture by expanding core resources with Payments, Notifications, and Support Tickets, and analyzing their ownership and lifecycle. I also defined HTTP status codes, error response formats, and versioning strategies to ensure clarity, consistency, and forward compatibility. Additionally, I proposed connectivity optimizations like batch operations, caching, and offline-first support to enhance performance in low-bandwidth African markets.
+
 ---
 
 ## 1. API Design Overview
 
 ### 1. Complete resource models with attributes and relationships
-summary
-
-link to document
+#### Resource Identification and Analysis
+We expanded the JuaJobs resource model by adding Payments, Notifications, and Support Tickets to better support financial transactions, real-time updates, and issue resolution. We justified each based on business needs and mapped out how users interact with each resource over its lifecycle. This ensured that every resource has a clear owner and purpose within the platform’s ecosystem.
+Link to document **[here](phase_1/resource_identification_&_analysis.md)**
 ### 2. Entity-relationship diagrams
 ### 3. Comprehensive endpoint catalog with HTTP methods
 ### 4. Authentication and authorization framework 
@@ -25,7 +27,11 @@ link to document
 
 ### 5. Query parameter standards
 ### 6. Error handling strategy
+We defined appropriate HTTP status codes for all major API responses and designed a standardized, user-friendly error format. Our error system distinguishes between validation, business logic, and system errors, making it easier for developers to troubleshoot. Each error message was written to be clear and actionable for API consumers.
+Link to document **[here](phase_2/HTTP_status_codes.md)**
 ### 7. Versioning approach
+We chose a URL-based versioning strategy (e.g., /api/v1/) to make API changes explicit and maintain clear structure over time. We documented how future versions would be rolled out and deprecated to preserve compatibility. Our lightweight change management framework helps plan for continuous improvement without breaking existing clients.
+Link to document **[here](phase_2/versioning_strategy.md)**
 
 ---
 
@@ -50,6 +56,8 @@ _*Note that the deployment address used is fake_
 ### 1. Solutions for localization challenges
 We thought about how our app needs to work in different countries in Africa. We are planning to support different languages like English, Swahili, and French, and also handle different money types and local dates and times. We also looked at specific things needed in countries like Kenya and Nigeria, and how to follow their local rules. Link to document **[here](phase_5/localization.md)**
 ### 2. Connectivity optimization strategies
+We optimized the API for Africa’s low-bandwidth environments by proposing batch operations, caching strategies, and payload minimization techniques. We also accounted for mobile-first users with offline-first features that allow apps to sync when reconnected. These design decisions help ensure JuaJobs performs well even in areas with limited internet access.
+Link to document **[here](phase_5/connectivity.md)**
 ### 3. Payment integration design
 ### 4. Mobile-first considerations
 
