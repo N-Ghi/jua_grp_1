@@ -155,8 +155,6 @@ Key endpoints include:
 
 A clear **transaction state model** is defined with states like `pending`, `processing`, `completed`, `failed`, `refunded`, and `cancelled` to track payment lifecycles.
 
-Robust **security measures** are enforced: OAuth2 for authorization, HTTPS with TLS 1.2+, HMAC-signed webhooks, encryption of sensitive data, and compliance with GDPR and local laws. All financial operations are logged for auditability and accountability.
-
 **Link to document:** [here](phase_5/payment_integration.md)
 
 ### 4. Mobile-first considerations
