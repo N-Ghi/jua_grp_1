@@ -1,4 +1,4 @@
-### **1. Payment Integration Design**
+### **Payment Integration Design**
 
 **a. Map Integration Points with Various Payment Systems**
 
