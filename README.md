@@ -7,7 +7,8 @@
 - **Daniel Iryivuze** : *Endpoint Designer* & *User Experience Analyst*
 - **Nagasaro Ghislaine** : *Documentation Specialist*
 - **Nana Koramah Abeasi** : *API Architect*
-    As part of the JuaJobs team, I contributed to the API architecture by expanding core resources with Payments, Notifications, and Support Tickets, and analyzing their ownership and lifecycle. I also defined HTTP status codes, error response formats, and versioning strategies to ensure clarity, consistency, and forward compatibility. Additionally, I proposed connectivity optimizations like batch operations, caching, and offline-first support to enhance performance in low-bandwidth African markets.
+
+  As part of the JuaJobs team, I contributed to the API architecture by expanding core resources with Payments, Notifications, and Support Tickets, and analyzing their ownership and lifecycle. I also defined HTTP status codes, error response formats, and versioning strategies to ensure clarity, consistency, and forward compatibility. Additionally, I proposed connectivity optimizations like batch operations, caching, and offline-first support to enhance performance in low-bandwidth African markets.
 
 ---
 
