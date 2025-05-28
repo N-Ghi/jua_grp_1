@@ -4,6 +4,7 @@
 ## Group Members and Roles
 
 - **Belinda Belange Larose** : *Security Designer*
+
 As a team member of JuaJobs API Design project, I focused on key aspects of the API's foundation and security. In Resource Attribute Design, I helped create the detailed blueprints for important data like user profiles and job listings, making sure each piece of information had the right type and rules. As the Security Designer, I led the effort to build a safe way for users to log in using sessions and set up rules so people can only access what they need, like clients managing their own jobs. I also contributed to the Localization Strategy, thinking about how the API needs to handle different languages, money, and local rules to work well across various African markets.
 - **Daniel Iryivuze** : *Endpoint Designer* & *User Experience Analyst*
 - **Nagasaro Ghislaine** : *Documentation Specialist*
