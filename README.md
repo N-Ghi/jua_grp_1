@@ -13,14 +13,25 @@
 ## 1. API Design Overview
 
 ### 1. Complete resource models with attributes and relationships
-summary
 
+summary
 link to document
+
 ### 2. Entity-relationship diagrams
+
+**Overview:**
+The *ERD* defines the data structure for a JuaJobs, centered around the USERS entity, which includes both clients and workers. JOB_POSTINGS are created by clients and categorized under CATEGORIES, which support a hierarchical structure via parent_category_id. Workers have associated WORKER_PROFILES and can submit APPLICATIONS to job postings. Once a job is completed, it is recorded in JOB_COMPLETIONS, referencing both the job and the application. REVIEWS enable users to evaluate one another per job, distinguishing between reviewer and reviewee. PAYMENTS log transactions between users, tied to specific jobs. NOTIFICATIONS are user-specific and likely triggered by various events in the system. The schema establishes clear relationships between entities to support job creation, application, fulfillment, feedback, and compensation.
+
+**Link to Diagram:** [ERD](phase_1/JuaJua_ERD.pdf)
+
 ### 3. Comprehensive endpoint catalog with HTTP methods
+
 ### 4. Authentication and authorization framework
+
 ### 5. Query parameter standards
+
 ### 6. Error handling strategy
+
 ### 7. Versioning approach
 
 ---
