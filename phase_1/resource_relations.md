@@ -100,7 +100,8 @@
 
 ## 2. Entity Relationship Diagram
 
-[Entity Relationship Diagram.](phase_1/JuaJua_ERD.pdf)
+[Entity Relationship Diagram.](JuaJua_ERD.pdf)
+
 **For a cleaner look, it only shows primary and foreign keys*
 
 ---
