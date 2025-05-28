@@ -1,4 +1,5 @@
 # JuaJobs Activity Group 1
+
 ---
 
 ## Group Members and Roles
@@ -149,6 +150,7 @@ We optimized the API for Africa’s low-bandwidth environments by proposing batc
 This document outlines the **Payment Integration Design** for JuaJobs, enabling transactions across diverse African markets. It maps integration points with regional payment providers such as **M-Pesa**, **MTN Mobile Money**, **Flutterwave**, and select banks, using RESTful APIs and standardized methods like STK push, OAuth2, and webhooks for confirmation and status updates.
 
 Key endpoints include:
+
 - `POST /api/payments` to initiate a transaction,
 - `GET /api/payments/{transaction_id}/status` to verify payment status, and
 - `GET /api/users/{user_id}/transactions` to list all user transactions.
@@ -158,6 +160,10 @@ A clear **transaction state model** is defined with states like `pending`, `proc
 **Link to document:** [here](phase_5/payment_integration.md)
 
 ### 4. Mobile-first considerations
+
+- Optimized API payloads to keep responses lightweight minimizing data-usage on mobile networks.
+- Structuring API responses to feed into UI friendly elements e.g: dropdown menus, pagination.
+- Design endpoints to support offline data caching and delayed sync when users reconnect.
 
 ---
 
