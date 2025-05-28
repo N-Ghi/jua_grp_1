@@ -12,7 +12,16 @@
 
 ## 1. API Design Overview
 
-- To Be Added
+### 1. Complete resource models with attributes and relationships
+summary
+
+link to document
+### 2. Entity-relationship diagrams
+### 3. Comprehensive endpoint catalog with HTTP methods
+### 4. Authentication and authorization framework
+### 5. Query parameter standards
+### 6. Error handling strategy
+### 7. Versioning approach
 
 ---
 
@@ -34,7 +43,12 @@ _*Note that the deployment address used is fake_
 
 ## 3. Market Adaptation
 
-- To Be Added
+### 1. Solutions for localization challenges
+summary
+link to document
+### 2. Connectivity optimization strategies
+### 3. Payment integration design
+### 4. Mobile-first considerations
 
 ---
 
