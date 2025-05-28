@@ -1,69 +1,48 @@
 # Authentication Design
 
 ## Overview
-The JuaJobs API uses a safe way to log in users that works well even when internet is slow or not available in Africa.
+The JuaJobs API uses session-based authentication with Redis for fast and secure user sessions, designed to work well in African market conditions.
 
-## Why We Need JWT
+## Why We Use Session-Based Authentication
 
-### Problems Without JWT
-1. **Security Issues**
-   - Without JWT, we'd need to check username/password for every request
-   - This means storing passwords in the database, which is risky
-   - If someone hacks the database, they get all passwords
-
-2. **Performance Problems**
-   - Every request would need to check the database
-   - This makes the app very slow
-   - Uses more internet data (important in Africa where data is expensive)
-
-3. **Offline Problems**
-   - Can't work when internet is slow or off
-   - Users would need to log in again and again
-   - Bad experience in areas with poor internet
-
-### Benefits of Using JWT
+### Benefits
 1. **Better Security**
-   - Passwords are never stored in the database
-   - Tokens can't be faked (they're signed)
-   - Easy to expire tokens if needed
+   - Can instantly invalidate sessions
+   - Better control over user sessions
+   - Easier to track active users
+   - Simpler to handle logout
 
 2. **Works Better**
-   - No need to check database every time
-   - Works faster with slow internet
-   - Uses less data
+   - Fast response times with Redis
+   - Works well with slow internet
+   - Uses less server resources
+   - Easy to scale
 
-3. **Works Offline**
-   - Can store tokens on phone
-   - Can work without internet
-   - Syncs when back online
+3. **Simple to Implement**
+   - Straightforward session management
+   - Easy to debug
+   - Clear security boundaries
+   - Simple to maintain
 
 ## Ways to Log In
 
-### 1. Regular Login with JWT
-- **What is JWT?**
-  - JWT means "JSON Web Token"
-  - It's like a digital ID card that proves who you are
-  - It's made up of three parts:
-    1. Header (tells what type of token it is)
-    2. Payload (has your info like user ID and permissions)
-    3. Signature (makes sure no one can fake it)
-  - The token is sent with every request to show you're logged in
+### 1. Regular Login with Sessions
+- **How Sessions Work**
+  - User logs in with credentials
+  - Server creates a session ID
+  - Session data stored in Redis
+  - Session ID sent to user
+  - User sends session ID with requests
 
-- **Types of Tokens**
-  - Access Token (works for 15 minutes)
-  - Refresh Token (works for 7 days)
-  - ID Token (has user info)
-
-- **What's in the Token**
+- **Session Data**
   ```json
   {
-    "sub": "user_id",
-    "iss": "juajobs_api",
-    "aud": "juajobs_client",
-    "exp": "when it expires",
-    "iat": "when it was made",
-    "scope": ["what they can do"],
-    "userType": "WORKER|CLIENT|ADMIN"
+    "session_id": "unique_id",
+    "user_id": "user_id",
+    "role": "WORKER|CLIENT|ADMIN",
+    "permissions": ["what they can do"],
+    "created_at": "timestamp",
+    "expires_at": "timestamp"
   }
   ```
 
@@ -82,31 +61,31 @@ The JuaJobs API uses a safe way to log in users that works well even when intern
 ### 1. Regular Email/Password Login
 1. User puts in email and password
 2. System checks if they're correct
-3. System gives them tokens
-4. App saves the tokens safely
-5. App uses tokens for other requests
+3. System creates a session
+4. System sends session ID to user
+5. User sends session ID with requests
 
-### 2. Getting New Token
-1. App sees old token is expired
-2. App asks for new token
-3. System checks refresh token
-4. System gives new access token
-5. App saves new token
+### 2. Session Management
+1. Check session on each request
+2. Update session if needed
+3. Delete session on logout
+4. Handle session expiration
+5. Track active sessions
 
 ### 3. Phone Number Login
 1. User puts in phone number
 2. System sends code by SMS
 3. User puts in the code
 4. System checks if code is right
-5. System gives tokens if code is right
+5. System creates session if code is right
 
 ## Safety Rules
 
-### Token Safety
+### Session Safety
 - Always use HTTPS
-- Keep refresh tokens safe
-- Get new tokens often
-- Delete tokens when logging out
+- Set secure cookie flags
+- Use short session timeouts
+- Delete sessions on logout
 
 ### Password Rules
 - At least 8 letters
@@ -121,33 +100,35 @@ The JuaJobs API uses a safe way to log in users that works well even when intern
 - 3 tries for SMS code per hour
 - 1000 API calls per hour
 
-## Working with Bad Internet
+## Working with Slow Internet
 
-### Offline Mode
-- Save tokens for offline use
-- Save requests when offline
-- Send saved requests when back online
+### Performance
+- Redis is fast and lightweight
+- Minimal data transfer
+- Quick session checks
+- Efficient error handling
 
-### Slow Internet
-- Make tokens smaller
-- Make responses smaller
-- Handle errors better
+### Error Handling
+- Clear error messages
+- Automatic retry logic
+- Session recovery
+- Connection timeout handling
 
 ## What Apps Need to Do
 
 ### App Requirements
-1. Keep tokens safe
-2. Get new tokens automatically
+1. Store session ID safely
+2. Handle session expiration
 3. Handle errors well
-4. Work when offline
-5. Try again if failed
+4. Implement retry logic
+5. Manage offline state
 
 ### Server Requirements
-1. Make tokens safely
-2. Check tokens properly
-3. Limit how many tries
-4. Keep logs of everything
-5. Watch for bad activity
+1. Set up Redis properly
+2. Handle session cleanup
+3. Limit login attempts
+4. Keep security logs
+5. Monitor for attacks
 
 ## Error Messages
 
@@ -162,14 +143,14 @@ The JuaJobs API uses a safe way to log in users that works well even when intern
 
 ### Common Errors
 - AUTH_001: Wrong email or password
-- AUTH_002: Token expired
-- AUTH_003: Bad token
+- AUTH_002: Session expired
+- AUTH_003: Invalid session
 - AUTH_004: Too many tries
 - AUTH_005: Account locked
 
 ## Safety Tips
-1. Use safe CORS settings
-2. Use safe headers
-3. Check security often
-4. Watch for bad activity
-5. Lock account after too many wrong tries 
+1. Use secure Redis configuration
+2. Set proper session timeouts
+3. Monitor session activity
+4. Watch for suspicious patterns
+5. Lock account after too many wrong tries
