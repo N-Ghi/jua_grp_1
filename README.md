@@ -181,6 +181,6 @@ A clear **transaction state model** is defined with states like `pending`, `proc
 
 ## 4. Presentation Material
 
-- [Presentation Slides](https://drive.google.com/file/d/1Zj7t5PNqq_xkRbf5Xhm_I1rZQTkyWxX9/view?usp=sharing))
+- [Presentation Slides](https://drive.google.com/file/d/1Zj7t5PNqq_xkRbf5Xhm_I1rZQTkyWxX9/view?usp=sharing)
 
 ---
