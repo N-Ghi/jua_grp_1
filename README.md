@@ -20,9 +20,15 @@
 
 - **Daniel Iryivuze** : *Endpoint Designer* & *User Experience Analyst*
   ```text
-As Endpoint Designer and User Experience Analyst for the JuaJobs API project, I led the development of three critical components: the Comprehensive Endpoint Catalog, Query Parameter Standards, and Payment Integration Design. I designed a consistent, scalable RESTful endpoint structure using clear HTTP methods, plural resource names, and intuitive nested routes. To enhance client-side efficiency, I developed robust query parameter standards supporting filtering, sorting, pagination, sparse fieldsets, full-text search, and geo-proximity, prioritizing performance and usability for mobile users. Additionally, I architected secure, region-aware payment integration workflows leveraging M-Pesa, MTN Mobile Money, Flutterwave, and select banks through OAuth2, STK push, and webhook-based status tracking, all mapped to a clear transaction lifecycle model.
-```
-
+  As Endpoint Designer and User Experience Analyst for the JuaJobs API project, I led the development of three critical components: the 
+  Comprehensive Endpoint Catalog, Query Parameter Standards, and Payment Integration Design. I designed a consistent, scalable RESTful 
+  endpoint structure using clear HTTP methods, plural resource names, and intuitive nested routes. To enhance client-side efficiency, I 
+  developed robust query parameter standards supporting filtering, sorting, pagination, sparse fieldsets, full-text search, and geo- 
+  proximity, prioritizing performance and usability for mobile users. Additionally, I architected secure, region-aware payment 
+  integration workflows leveraging M-Pesa, MTN Mobile Money, Flutterwave, and select banks through OAuth2, STK push, and webhook-based 
+  status tracking, all mapped to a clear transaction lifecycle model.
+  ```
+  ---
 - **Nagasaro Ghislaine** : *Documentation Specialist*
 
   ```text
@@ -32,7 +38,7 @@ As Endpoint Designer and User Experience Analyst for the JuaJobs API project, I 
   As the Documentation Specialist, I led the effort to elevate the project’s documentation quality by creating a comprehensive
   OpenAPI specification, establishing an API style guide, and producing developer-focused documentation.
   ```
-
+---
 - **Nana Koramah Abeasi** : *API Architect*
 
   ```text
